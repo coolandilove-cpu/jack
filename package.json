@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "echo 'Install completed with React 19 overrides'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
