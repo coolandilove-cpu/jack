@@ -211,7 +211,12 @@ export class MemeService {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error fetching user memes:', error)
+        // Chỉ log warning để không spam console với network errors
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error fetching memes (app running in offline mode)')
+        } else {
+          console.error('Error fetching user memes:', error)
+        }
         return []
       }
 
@@ -241,7 +246,11 @@ export class MemeService {
         .range(offset, offset + limit - 1)
 
       if (error) {
-        console.error('Error fetching public memes:', error)
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error fetching public memes (app running in offline mode)')
+        } else {
+          console.error('Error fetching public memes:', error)
+        }
         return []
       }
 
@@ -267,7 +276,11 @@ export class MemeService {
         .rpc('get_trending_memes', { limit_count: limit } as any)) as { data: Meme[] | null, error: any }
 
       if (error) {
-        console.error('Error fetching trending memes:', error)
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error fetching trending memes (app running in offline mode)')
+        } else {
+          console.error('Error fetching trending memes:', error)
+        }
         return []
       }
 
@@ -519,7 +532,11 @@ export class MemeService {
         .limit(limit)
 
       if (error) {
-        console.error('Error searching memes:', error)
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error searching memes (app running in offline mode)')
+        } else {
+          console.error('Error searching memes:', error)
+        }
         return []
       }
 
@@ -550,7 +567,11 @@ export class MemeService {
         .limit(limit)
 
       if (error) {
-        console.error('Error fetching memes by tags:', error)
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error fetching memes by tags (app running in offline mode)')
+        } else {
+          console.error('Error fetching memes by tags:', error)
+        }
         return []
       }
 

@@ -83,8 +83,16 @@ export const saveCandyToSupabase = async (
       stack: error instanceof Error ? error.stack : undefined
     })
     
-    // No fallback to localStorage - throw error directly
-    throw new Error(`Failed to save candy to Supabase: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    // Fallback to localStorage if Supabase fails
+    console.log('⚠️ Falling back to localStorage due to Supabase error...')
+    try {
+      const localMeme = await saveCandyToMeme(candyData, walletAddress)
+      console.log('✅ Successfully saved to localStorage as fallback')
+      return localMeme
+    } catch (fallbackError) {
+      console.error('❌ Fallback to localStorage also failed:', fallbackError)
+      throw new Error(`Failed to save candy (both Supabase and localStorage failed): ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
   }
 }
 

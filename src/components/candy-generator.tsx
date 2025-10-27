@@ -72,14 +72,20 @@ const designOptions = [
   { name: "thuoc4", icon: null, value: "thuoc4", imagePath: "/icons/thuoc4.png" },
   { name: "thuoc5", icon: null, value: "thuoc5", imagePath: "/icons/thuoc5.png" },
   { name: "thuoc6", icon: null, value: "thuoc6", imagePath: "/icons/thuoc6.png" },
+  { name: "thuoc7", icon: null, value: "thuoc7", imagePath: "/icons/thuoc7.jpg" },
   { name: "trustmebro", icon: null, value: "trustmebro", imagePath: "/icons/trustmebro.png" },
   { name: "trustmebro2", icon: null, value: "trustmebro2", imagePath: "/icons/trustmebro2.png" },
 ]
 
-const CandyGenerator = () => {
+  const CandyGenerator = () => {
   const { connected, publicKey } = useWallet()
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  
+  // Debug: Log wallet connection status
+  useEffect(() => {
+    console.log('🔍 Wallet connection status:', { connected, hasPublicKey: !!publicKey, publicKey: publicKey?.toString() })
+  }, [connected, publicKey])
   const [candyTypes, setCandyTypes] = useState<CandyType[]>([
     {
       id: "1",
@@ -1176,12 +1182,13 @@ const CandyGenerator = () => {
                 <Button
                   variant="default"
                   onClick={saveToDashboard}
-                  disabled={!connected || isSaving}
+                  disabled={isSaving}
                   className="hover:bg-green-600 font-normal border text-white bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   size="sm"
                 >
                   <Save className="w-4 h-4 mr-1" />
                   {isSaving ? 'Saving...' : 'Save to Dashboard'}
+                  {!connected && <span className="ml-2 text-xs">(Needs wallet)</span>}
                 </Button>
               </div>
             </div>

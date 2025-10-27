@@ -52,9 +52,25 @@ export class UserService {
         .eq('wallet_address', walletAddress)
         .single()) as { data: any, error: any }
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('❌ Error fetching user:', fetchError)
-        throw new Error(`Failed to fetch user: ${fetchError.message}`)
+      if (fetchError) {
+        // PGRST116 = không tìm thấy rows (bình thường)
+        if (fetchError.code === 'PGRST116' || fetchError.message?.includes('No rows')) {
+          console.log('ℹ️ User does not exist yet (this is normal for first-time users)')
+        } else {
+          // Network error hoặc lỗi kết nối khác
+          console.warn('⚠️ Error fetching user (might be network issue):', {
+            message: fetchError.message,
+            code: fetchError.code,
+            details: fetchError.details
+          })
+          
+          // Nếu là lỗi network, không throw mà coi như user chưa tồn tại
+          if (fetchError.message?.includes('Failed to fetch') || fetchError.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+            console.log('ℹ️ Network error - continuing without database (app will work in offline mode)')
+          } else {
+            throw new Error(`Failed to fetch user: ${fetchError.message || 'Unknown error'}`)
+          }
+        }
       }
 
       if (existingUser) {
@@ -119,6 +135,8 @@ export class UserService {
     } catch (error) {
       console.error('💥 Error in createOrUpdateUser:', {
         error: error instanceof Error ? error.message : error,
+        errorDetails: error,
+        stack: error instanceof Error ? error.stack : undefined,
         walletAddress,
         walletType
       })
@@ -144,7 +162,11 @@ export class UserService {
         .single()) as { data: any, error: any }
 
       if (error) {
-        console.error('Error fetching user:', error)
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
+          console.warn('⚠️ Network error fetching user (app running in offline mode)')
+        } else {
+          console.error('Error fetching user:', error)
+        }
         return null
       }
 

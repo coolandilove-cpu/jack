@@ -68,15 +68,27 @@ function WalletConnectionHandler() {
           duration: 4000
         })
       } else {
-        console.error('❌ Failed to save user to Supabase - no user returned')
-        toast.error('Connection Issue', {
-          description: 'Wallet connected but failed to save user data to database.',
-          duration: 4000
-        })
+        console.warn('⚠️ No user returned from createOrUpdateUser - this might be normal if Supabase is not configured')
+        // Don't show error toast if Supabase is not configured
+        const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        if (isSupabaseConfigured) {
+          toast.error('Connection Issue', {
+            description: 'Wallet connected but failed to save user data to database.',
+            duration: 4000
+          })
+        }
       }
     } catch (error) {
       console.error('💥 Error saving user to Supabase:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      
+      // Check if Supabase is configured before showing error
+      const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      
+      if (!isSupabaseConfigured) {
+        console.warn('⚠️ Supabase not configured, skipping user save')
+        return // Exit silently if Supabase is not configured
+      }
       
       toast.error('Connection Error', {
         description: `Failed to save user data: ${errorMessage}`,

@@ -18,7 +18,7 @@ interface JackExpression {
 
 // Danh sách các ảnh biểu cảm của Jack từ thư mục assets-img với độ hiếm
 const jackExpressions: JackExpression[] = [
-  // COMMON (60% chance) - 19 cards
+  // COMMON (60% chance) - 20 cards
   { name: "Buồn", path: "/assets-img/bangoc-buon.png", emotion: "sad", rarity: "common" },
   { name: "Khóc", path: "/assets-img/bangoc-khoc.png", emotion: "crying", rarity: "common" },
   { name: "Ngượng ngùng", path: "/assets-img/bangoc-nguongngung.png", emotion: "shy", rarity: "common" },
@@ -38,8 +38,9 @@ const jackExpressions: JackExpression[] = [
   { name: "VX", path: "/assets-img/vx-removebg-preview.png", emotion: "vx", rarity: "common" },
   { name: "XC", path: "/assets-img/xc-removebg-preview.png", emotion: "xc", rarity: "common" },
   { name: "Z", path: "/assets-img/z-removebg-preview.png", emotion: "z", rarity: "common" },
+  { name: "Xám buồn", path: "/assets-img/xam-buon.png", emotion: "gray_sad", rarity: "common" },
 
-  // RARE (25% chance) - 8 cards
+  // RARE (25% chance) - 10 cards
   { name: "Phong mã", path: "/assets-img/do-phongma.png", emotion: "wild", rarity: "rare" },
   { name: "Cam khóc dòng sông", path: "/assets-img/cam-khocdongsong.png", emotion: "river_cry", rarity: "rare" },
   { name: "Cam kính mắt", path: "/assets-img/cam-kinhmat.png", emotion: "cool", rarity: "rare" },
@@ -48,14 +49,20 @@ const jackExpressions: JackExpression[] = [
   { name: "Tim cầm kéo (preview)", path: "/assets-img/tim-camkeo-removebg-preview.png", emotion: "scissors_preview", rarity: "rare" },
   { name: "Xanh cổ kính", path: "/assets-img/xanh-cokinh.png", emotion: "vintage", rarity: "rare" },
   { name: "Xanh nón Noel", path: "/assets-img/xanh-nonnoel.png", emotion: "christmas", rarity: "rare" },
+  { name: "Halloween PFP", path: "/assets-img/halloween-pfp.png", emotion: "halloween_pfp", rarity: "rare" },
+  { name: "Hallow Queen", path: "/assets-img/hallowqueen-sec.png", emotion: "hallow_queen", rarity: "rare" },
 
-  // EPIC (12% chance) - 3 cards
+  // EPIC (12% chance) - 5 cards
   { name: "Cầu vồng cười", path: "/assets-img/cauvong-cuoi.png", emotion: "rainbow_laugh", rarity: "epic" },
   { name: "Vàng vui vẻ", path: "/assets-img/vang-vuive.png", emotion: "gold_happy", rarity: "epic" },
   { name: "Xanh lá trắng Halloween", path: "/assets-img/xanhlatrang-halloween.png", emotion: "halloween", rarity: "epic" },
+  { name: "Kem vui vẻ", path: "/assets-img/kem-vuive.png", emotion: "icecream_happy", rarity: "epic" },
+  { name: "Màu tăm băm", path: "/assets-img/mautambam.png", emotion: "rainbow_mix", rarity: "epic" },
 
-  // LEGENDARY (3% chance) - 2 cards
+  // LEGENDARY (3% chance) - 3 cards
   { name: "Xanh pha tim vui vẻ", path: "/assets-img/xanhphatim-vuive.png", emotion: "blue_pink_happy", rarity: "legendary" },
+  { name: "Hồng xanh tim cười mỉm", path: "/assets-img/hongxanhtim-cuoimim.png", emotion: "pink_blue_smile", rarity: "legendary" },
+  { name: "Hồng xanh tim vui vẻ", path: "/assets-img/hongxanhtim-vuive.png", emotion: "pink_blue_happy", rarity: "legendary" },
 ]
 
 interface JackExpressionsProps {
