@@ -33,6 +33,27 @@ function WalletConnectionHandler() {
   const handleWalletConnect = async (wallet: any, walletAddress: string) => {
     console.log('🔗 Wallet connected:', wallet.adapter.name)
     
+    // Check localStorage cache to avoid multiple calls
+    const cacheKey = `wallet_user_${walletAddress}`
+    const cachedData = localStorage.getItem(cacheKey)
+    
+    if (cachedData) {
+      const cached = JSON.parse(cachedData)
+      const cacheTime = new Date(cached.timestamp).getTime()
+      const now = Date.now()
+      const fiveMinutes = 5 * 60 * 1000
+      
+      // If cached data is less than 5 minutes old, skip Supabase call
+      if (now - cacheTime < fiveMinutes) {
+        console.log('✅ Using cached user data (avoiding duplicate call)')
+        toast.success('Wallet Connected! 🔗', {
+          description: `Welcome back, ${cached.username || 'User'}!`,
+          duration: 3000
+        })
+        return
+      }
+    }
+    
     // Lưu user vào Supabase khi kết nối ví
     try {
       const walletType = wallet.adapter.name.toLowerCase()
@@ -63,6 +84,17 @@ function WalletConnectionHandler() {
       
       if (user) {
         console.log('✅ User saved successfully to Supabase:', user.id)
+        
+        // Save to localStorage cache
+        const cacheData = {
+          userId: user.id,
+          username: user.profile_data?.username || `user_${walletAddress.slice(0, 8)}`,
+          walletAddress: walletAddress,
+          timestamp: new Date().toISOString()
+        }
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData))
+        console.log('💾 User data cached in localStorage')
+        
         toast.success('Wallet Connected! 🔗', {
           description: `Welcome to Jack Liam, ${user.profile_data?.username || 'User'}!`,
           duration: 4000
@@ -76,6 +108,14 @@ function WalletConnectionHandler() {
             description: 'Wallet connected but failed to save user data to database.',
             duration: 4000
           })
+        } else {
+          // Still cache even if Supabase is not configured
+          const cacheData = {
+            username: `user_${walletAddress.slice(0, 8)}`,
+            walletAddress: walletAddress,
+            timestamp: new Date().toISOString()
+          }
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData))
         }
       }
     } catch (error) {
@@ -87,6 +127,13 @@ function WalletConnectionHandler() {
       
       if (!isSupabaseConfigured) {
         console.warn('⚠️ Supabase not configured, skipping user save')
+        // Cache basic info even if Supabase fails
+        const cacheData = {
+          username: `user_${walletAddress.slice(0, 8)}`,
+          walletAddress: walletAddress,
+          timestamp: new Date().toISOString()
+        }
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData))
         return // Exit silently if Supabase is not configured
       }
       
@@ -118,7 +165,7 @@ export default function SolanaWalletProvider({ children }: SolanaWalletProviderP
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider 
         wallets={wallets} 
-        autoConnect={false}
+        autoConnect={true}
         onError={(error) => {
           console.error('Wallet connection error:', error)
           // Don't show toast for disconnect errors as they're expected

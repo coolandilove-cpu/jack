@@ -808,13 +808,13 @@ const designOptions = [
       const savedMeme = await saveCandyToSupabase(candyData, publicKey.toString())
       
       if (savedMeme) {
-        console.log('Candy saved successfully to dashboard:', savedMeme)
-        toast.success('Candy Saved! 🍭', {
-          description: 'Your candy creation has been saved to Supabase successfully!',
-          duration: 4000,
+        console.log('Candy saved successfully to dashboard and gallery:', savedMeme)
+        toast.success('Candy Saved! 🍭✨', {
+          description: 'Your creation has been saved to Dashboard and Gallery!',
+          duration: 5000,
           action: {
-            label: 'View Dashboard',
-            onClick: () => window.open('/dashboard', '_blank')
+            label: 'View Gallery',
+            onClick: () => window.open('/gallery', '_blank')
           }
         })
       } else {

@@ -78,8 +78,10 @@ export class MemeService {
         title: memeData.title,
         author_wallet_address: memeData.author_wallet_address,
         tags: memeData.tags,
+        is_public: memeData.is_public,
         hasImage: !!memeData.image_base64
       })
+      console.log('✅ Setting is_public=true - This meme will appear in both Dashboard and Gallery!')
 
       const { data, error } = await (supabaseClient
         .from('memes')
@@ -159,8 +161,10 @@ export class MemeService {
         title: memeData.title,
         author_wallet_address: memeData.author_wallet_address,
         tags: memeData.tags,
+        is_public: memeData.is_public,
         hasImage: !!memeData.image_base64
       })
+      console.log('✅ Setting is_public=true - Uploaded meme will appear in both Dashboard and Gallery!')
 
       const { data, error } = await (supabaseClient
         .from('memes')
@@ -238,6 +242,9 @@ export class MemeService {
         return []
       }
 
+      console.log('🔍 Fetching public memes from Supabase...')
+      console.log('🔍 Query: is_public = true, limit =', limit, ', offset =', offset)
+
       const { data, error } = await supabaseClient
         .from('memes')
         .select('*')
@@ -246,17 +253,22 @@ export class MemeService {
         .range(offset, offset + limit - 1)
 
       if (error) {
+        console.error('❌ Error fetching public memes:', error)
         if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_NAME_NOT_RESOLVED')) {
           console.warn('⚠️ Network error fetching public memes (app running in offline mode)')
-        } else {
-          console.error('Error fetching public memes:', error)
         }
         return []
       }
 
+      console.log('✅ Public memes fetched successfully:', data?.length || 0)
+      if (data && data.length > 0) {
+        const firstMeme = data[0] as any
+        console.log('📋 First meme:', { id: firstMeme.id, title: firstMeme.title, is_public: firstMeme.is_public })
+      }
+      
       return data || []
     } catch (error) {
-      console.error('Error in getPublicMemes:', error)
+      console.error('💥 Error in getPublicMemes:', error)
       return []
     }
   }

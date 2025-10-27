@@ -11,7 +11,7 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import MemeUpload from "@/components/meme-upload"
 import MemeCard from "@/components/meme-card"
-import { type MemeData } from "@/lib/meme-storage"
+import { type MemeData, getMemes } from "@/lib/meme-storage"
 import { MemeService } from "@/lib/meme-service"
 
 export default function GalleryPage() {
@@ -31,27 +31,59 @@ export default function GalleryPage() {
         
         const supabaseMemes = await MemeService.getPublicMemes()
         console.log('📊 Loaded memes from Supabase:', supabaseMemes.length)
+        console.log('📊 Memes data:', supabaseMemes)
         
-        // Convert Supabase memes to gallery format
-        const convertedMemes: MemeData[] = supabaseMemes.map(meme => ({
-          id: parseInt(meme.id.replace(/-/g, '').slice(0, 10), 16), // Convert UUID to number
-          title: meme.title,
-          image: meme.image_base64 || '',
-          likes: meme.likes,
-          shares: meme.shares,
-          downloads: meme.downloads,
-          tags: meme.tags,
-          author: meme.author_wallet_address,
-          createdAt: meme.created_at,
-          isLiked: false,
-          description: meme.description || undefined
-        }))
-        
-        setMemes(convertedMemes)
-        console.log('✅ Memes loaded successfully:', convertedMemes.length)
+        if (supabaseMemes.length > 0) {
+          // Convert Supabase memes to gallery format
+          const convertedMemes: MemeData[] = supabaseMemes.map(meme => ({
+            id: parseInt(meme.id.replace(/-/g, '').slice(0, 10), 16), // Convert UUID to number
+            title: meme.title,
+            image: meme.image_base64 || '',
+            likes: meme.likes,
+            shares: meme.shares,
+            downloads: meme.downloads,
+            tags: meme.tags,
+            author: meme.author_wallet_address,
+            createdAt: meme.created_at,
+            isLiked: false,
+            description: meme.description || undefined
+          }))
+          
+          setMemes(convertedMemes)
+          console.log('✅ Memes loaded successfully from Supabase:', convertedMemes.length)
+        } else {
+          // Fallback to localStorage if Supabase is empty or not configured
+          console.log('⚠️ No memes in Supabase, trying localStorage fallback...')
+          try {
+            const localStorageMemes = getMemes()
+            if (localStorageMemes.length > 0) {
+              console.log('✅ Loaded memes from localStorage:', localStorageMemes.length)
+              setMemes(localStorageMemes)
+            } else {
+              console.log('⚠️ No memes found in localStorage either')
+              setMemes([])
+            }
+          } catch (error) {
+            console.error('Error loading from localStorage:', error)
+            setMemes([])
+          }
+        }
       } catch (error) {
         console.error('💥 Error loading memes from Supabase:', error)
-        setMemes([])
+        // Fallback to localStorage on error
+        try {
+          console.log('⚠️ Falling back to localStorage due to error...')
+          const localStorageMemes = getMemes()
+          if (localStorageMemes.length > 0) {
+            console.log('✅ Loaded memes from localStorage fallback:', localStorageMemes.length)
+            setMemes(localStorageMemes)
+          } else {
+            setMemes([])
+          }
+        } catch (fallbackError) {
+          console.error('Error loading from localStorage fallback:', fallbackError)
+          setMemes([])
+        }
       } finally {
         setIsLoading(false)
       }
@@ -250,6 +282,32 @@ export default function GalleryPage() {
           </CardContent>
         </Card>
 
+        {/* Memes Grid */}
+        {sortedMemes.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Upload className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No memes yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Be the first to share your creation!
+            </p>
+            <Button onClick={() => setShowUpload(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Share Your Creation
+            </Button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {sortedMemes.map((meme) => (
+              <MemeCard
+                key={meme.id}
+                meme={meme}
+                onLike={handleLike}
+                onShare={handleShare}
+                onDownload={handleDownload}
+              />
+            ))}
+          </div>
+        )}
 
       </div>
 
