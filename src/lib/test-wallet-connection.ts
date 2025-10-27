@@ -38,11 +38,11 @@ export async function testWalletConnectionFlow() {
       }
     }
 
-    const { data: createdUser, error: createError } = await supabaseClient
+    const { data: createdUser, error: createError } = await ((supabaseClient as any)
       .from('users')
       .insert(testUser)
       .select()
-      .single()
+      .single()) as { data: any, error: any }
 
     if (createError) {
       console.error('❌ User creation test failed:', createError)
@@ -57,7 +57,7 @@ export async function testWalletConnectionFlow() {
 
     // Test 3: Try to update the test user
     console.log('🔄 Testing user update...')
-    const { data: updatedUser, error: updateError } = await supabaseClient
+    const { data: updatedUser, error: updateError } = await ((supabaseClient as any)
       .from('users')
       .update({
         last_active_at: new Date().toISOString(),
@@ -68,7 +68,7 @@ export async function testWalletConnectionFlow() {
       })
       .eq('wallet_address', testWalletAddress)
       .select()
-      .single()
+      .single()) as { data: any, error: any }
 
     if (updateError) {
       console.error('❌ User update test failed:', updateError)
@@ -78,11 +78,11 @@ export async function testWalletConnectionFlow() {
 
     // Test 4: Try to fetch user by wallet address
     console.log('🔍 Testing user fetch by wallet address...')
-    const { data: fetchedUser, error: fetchError } = await supabaseClient
+    const { data: fetchedUser, error: fetchError } = await ((supabaseClient as any)
       .from('users')
       .select('*')
       .eq('wallet_address', testWalletAddress)
-      .single()
+      .single()) as { data: any, error: any }
 
     if (fetchError) {
       console.error('❌ User fetch test failed:', fetchError)
@@ -131,11 +131,11 @@ export async function checkWalletInDatabase(walletAddress: string) {
   console.log(`🔍 Checking if wallet ${walletAddress} exists in database...`)
   
   try {
-    const { data, error } = await supabaseClient
+    const { data, error } = await ((supabaseClient as any)
       .from('users')
       .select('*')
       .eq('wallet_address', walletAddress)
-      .single()
+      .single()) as { data: any, error: any }
 
     if (error && error.code !== 'PGRST116') {
       console.error('❌ Error checking wallet:', error)

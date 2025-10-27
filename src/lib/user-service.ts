@@ -46,11 +46,11 @@ export class UserService {
 
       // Kiểm tra user đã tồn tại chưa
       console.log('🔍 Checking if user exists...')
-      const { data: existingUser, error: fetchError } = await supabaseClient
+      const { data: existingUser, error: fetchError } = await ((supabaseClient as any)
         .from('users')
         .select('*')
         .eq('wallet_address', walletAddress)
-        .single()
+        .single()) as { data: any, error: any }
 
       if (fetchError && fetchError.code !== 'PGRST116') {
         console.error('❌ Error fetching user:', fetchError)
@@ -70,12 +70,12 @@ export class UserService {
           updated_at: new Date().toISOString()
         }
 
-        const { data: updatedUser, error: updateError } = await supabaseClient
+        const { data: updatedUser, error: updateError } = await ((supabaseClient as any)
           .from('users')
           .update(updateData)
           .eq('wallet_address', walletAddress)
           .select()
-          .single()
+          .single()) as { data: any, error: any }
 
         if (updateError) {
           console.error('❌ Error updating user:', updateError)
@@ -102,11 +102,11 @@ export class UserService {
           hasProfileData: !!newUser.profile_data
         })
 
-        const { data: createdUser, error: createError } = await supabaseClient
+        const { data: createdUser, error: createError } = await ((supabaseClient as any)
           .from('users')
           .insert(newUser)
           .select()
-          .single()
+          .single()) as { data: any, error: any }
 
         if (createError) {
           console.error('❌ Error creating user:', createError)
@@ -137,11 +137,11 @@ export class UserService {
         return null
       }
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await ((supabaseClient as any)
         .from('users')
         .select('*')
         .eq('wallet_address', walletAddress)
-        .single()
+        .single()) as { data: any, error: any }
 
       if (error) {
         console.error('Error fetching user:', error)
@@ -163,7 +163,7 @@ export class UserService {
     profileData: UserProfile
   ): Promise<User | null> {
     try {
-      const { data, error } = await supabaseClient
+      const { data, error } = await ((supabaseClient as any)
         .from('users')
         .update({
           profile_data: profileData,
@@ -171,7 +171,7 @@ export class UserService {
         })
         .eq('wallet_address', walletAddress)
         .select()
-        .single()
+        .single()) as { data: any, error: any }
 
       if (error) {
         console.error('Error updating user profile:', error)
@@ -190,11 +190,11 @@ export class UserService {
    */
   static async getAllUsers(limit: number = 50, offset: number = 0): Promise<User[]> {
     try {
-      const { data, error } = await supabaseClient
+      const { data, error } = await ((supabaseClient as any)
         .from('users')
         .select('*')
         .order('last_active_at', { ascending: false })
-        .range(offset, offset + limit - 1)
+        .range(offset, offset + limit - 1)) as { data: any[], error: any }
 
       if (error) {
         console.error('Error fetching users:', error)
@@ -214,8 +214,8 @@ export class UserService {
   static async getUserStats(walletAddress: string) {
     try {
       // Gọi function get_user_stats từ database
-      const { data, error } = await supabaseClient
-        .rpc('get_user_stats', { user_wallet: walletAddress })
+      const { data, error } = await ((supabaseClient as any)
+        .rpc('get_user_stats', { user_wallet: walletAddress })) as { data: any, error: any }
 
       if (error) {
         console.error('Error fetching user stats:', error)
@@ -234,10 +234,10 @@ export class UserService {
    */
   static async deactivateUser(walletAddress: string): Promise<boolean> {
     try {
-      const { error } = await supabaseClient
+      const { error } = await ((supabaseClient as any)
         .from('users')
         .update({ is_active: false })
-        .eq('wallet_address', walletAddress)
+        .eq('wallet_address', walletAddress)) as { error: any }
 
       if (error) {
         console.error('Error deactivating user:', error)
@@ -256,11 +256,11 @@ export class UserService {
    */
   static async userExists(walletAddress: string): Promise<boolean> {
     try {
-      const { data, error } = await supabaseClient
+      const { data, error } = await ((supabaseClient as any)
         .from('users')
         .select('id')
         .eq('wallet_address', walletAddress)
-        .single()
+        .single()) as { data: any, error: any }
 
       return !error && !!data
     } catch (error) {

@@ -15,6 +15,19 @@ import { saveCandyToMeme, saveCandyToSupabase, generateCandyTitle, generateCandy
 import { toast } from "sonner"
 import { runAllTests } from "@/lib/supabase-test"
 
+// Extend Matter.js Body type to include our custom candyData property
+declare module "matter-js" {
+  interface Body {
+    candyData?: {
+      iconType: string
+      primaryColor: string
+      secondaryColor?: string
+      baseColor: string
+      outlineType: "solid" | "oneColorStripe" | "biColorStripe"
+    }
+  }
+}
+
 interface CandyType {
   id: string
   name: string
@@ -56,6 +69,9 @@ const designOptions = [
   { name: "thuoc2", icon: null, value: "thuoc2", imagePath: "/icons/thuoc2.png" },
   { name: "Jack Sunny", icon: null, value: "jack-sunny", imagePath: "/icons/jack-sunny.png" },
   { name: "thuoc3", icon: null, value: "thuoc3", imagePath: "/icons/thuoc3.png" },
+  { name: "thuoc4", icon: null, value: "thuoc4", imagePath: "/icons/thuoc4.png" },
+  { name: "thuoc5", icon: null, value: "thuoc5", imagePath: "/icons/thuoc5.png" },
+  { name: "thuoc6", icon: null, value: "thuoc6", imagePath: "/icons/thuoc6.png" },
   { name: "trustmebro", icon: null, value: "trustmebro", imagePath: "/icons/trustmebro.png" },
   { name: "trustmebro2", icon: null, value: "trustmebro2", imagePath: "/icons/trustmebro2.png" },
 ]
@@ -570,7 +586,6 @@ const CandyGenerator = () => {
           friction: 0.4,
           frictionAir: 0.01,
           density: 0.001,
-          angularDamping: 0.05, // 徐々に回転が止まる自然な挙動
         })
 
         // Add custom data to the body
@@ -1094,7 +1109,7 @@ const CandyGenerator = () => {
                     <label className="block text-sm text-gray-400 mb-2">Design</label>
                     <div className="grid grid-cols-8 gap-2">
                       {designOptions.map((design) => {
-                        const IconComponent = design.icon
+                        const IconComponent = design.icon as React.ComponentType<{ className?: string }> | null
                         const isLoaded = loadedImages.has(design.value)
                         const isFailed = failedImages.has(design.value)
 

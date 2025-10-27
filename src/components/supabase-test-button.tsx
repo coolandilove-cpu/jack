@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { testSupabaseConnection, testMemeCreation } from '@/lib/test-supabase-connection'
+import { testSupabaseConnection, testMemeTableAccess } from '@/lib/supabase-test'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Loader2, CheckCircle, XCircle, Database, TestTube } from 'lucide-react'
 
@@ -25,10 +25,10 @@ export default function SupabaseTestButton() {
       console.log('Connection test result:', connectionResult)
       
       let memeTestResult = null
-      if (connected && publicKey && connectionResult.success) {
-        // Test meme creation if wallet is connected
-        memeTestResult = await testMemeCreation(publicKey.toString())
-        console.log('Meme creation test result:', memeTestResult)
+      if (connectionResult.success) {
+        // Test meme table access
+        memeTestResult = await testMemeTableAccess()
+        console.log('Meme table access test result:', memeTestResult)
       }
       
       setTestResults({

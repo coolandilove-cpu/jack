@@ -22,7 +22,7 @@ export default function ProfileCard() {
   const [isFlipping, setIsFlipping] = useState(false)
   const cardContainerRef = useRef<HTMLDivElement>(null)
   const backCardRef = useRef<HTMLDivElement>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number>(0)
   const lastUpdateTimeRef = useRef<number>(0)
 
   // リニア補間関数

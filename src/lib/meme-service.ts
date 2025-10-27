@@ -81,11 +81,11 @@ export class MemeService {
         hasImage: !!memeData.image_base64
       })
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await (supabaseClient
         .from('memes')
-        .insert(memeData)
+        .insert(memeData as any)
         .select()
-        .single()
+        .single()) as { data: Meme | null, error: any }
 
       if (error) {
         console.error('Supabase error creating meme:', {
@@ -162,11 +162,11 @@ export class MemeService {
         hasImage: !!memeData.image_base64
       })
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await (supabaseClient
         .from('memes')
-        .insert(memeData)
+        .insert(memeData as any)
         .select()
-        .single()
+        .single()) as { data: Meme | null, error: any }
 
       if (error) {
         console.error('❌ Supabase error creating uploaded meme:', {
@@ -263,8 +263,8 @@ export class MemeService {
         return []
       }
 
-      const { data, error } = await supabaseClient
-        .rpc('get_trending_memes', { limit_count: limit })
+      const { data, error } = await (supabaseClient
+        .rpc('get_trending_memes', { limit_count: limit } as any)) as { data: Meme[] | null, error: any }
 
       if (error) {
         console.error('Error fetching trending memes:', error)
@@ -318,13 +318,13 @@ export class MemeService {
         }
       } else {
         // Like - tạo interaction mới
-        const { error: insertError } = await supabaseClient
+        const { error: insertError } = await (supabaseClient
           .from('user_interactions')
           .insert({
             meme_id: memeId,
             user_wallet_address: userWalletAddress,
             interaction_type: 'like'
-          })
+          } as any)) as { error: any }
 
         if (insertError) {
           console.error('Error adding like:', insertError)
@@ -350,13 +350,13 @@ export class MemeService {
         return false
       }
 
-      const { error } = await supabaseClient
+      const { error } = await (supabaseClient
         .from('user_interactions')
         .insert({
           meme_id: memeId,
           user_wallet_address: userWalletAddress,
           interaction_type: 'share'
-        })
+        } as any)) as { error: any }
 
       if (error) {
         console.error('Error sharing meme:', error)
@@ -381,13 +381,13 @@ export class MemeService {
         return false
       }
 
-      const { error } = await supabaseClient
+      const { error } = await (supabaseClient
         .from('user_interactions')
         .insert({
           meme_id: memeId,
           user_wallet_address: userWalletAddress,
           interaction_type: 'download'
-        })
+        } as any)) as { error: any }
 
       if (error) {
         console.error('Error downloading meme:', error)
@@ -412,13 +412,13 @@ export class MemeService {
         return false
       }
 
-      const { error } = await supabaseClient
+      const { error } = await (supabaseClient
         .from('user_interactions')
         .insert({
           meme_id: memeId,
           user_wallet_address: userWalletAddress,
           interaction_type: 'view'
-        })
+        } as any)) as { error: any }
 
       if (error) {
         console.error('Error viewing meme:', error)
@@ -476,13 +476,16 @@ export class MemeService {
         return null
       }
 
-      const { data, error } = await supabaseClient
+      // Workaround for Supabase type inference issue
+      const baseQuery = (supabaseClient as any)
         .from('memes')
         .update(updates)
+      
+      const { data, error } = await (baseQuery
         .eq('id', memeId)
         .eq('author_wallet_address', userWalletAddress)
         .select()
-        .single()
+        .single()) as { data: Meme | null, error: any }
 
       if (error) {
         console.error('Error updating meme:', error)
