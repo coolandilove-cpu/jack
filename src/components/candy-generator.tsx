@@ -1,5 +1,4 @@
 "use client"
-import type { HTMLCanvasElement } from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
